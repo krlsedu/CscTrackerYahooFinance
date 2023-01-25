@@ -33,6 +33,8 @@ def global_price(ticker):
         'summary': summary,
         'price': price
     }
+    ticker_info = ticker_info.history(period='1d', interval="15m")
+    print(ticker_info['open'].to_json(orient="table"))
     return ret
 
 
@@ -46,6 +48,20 @@ def br_price(ticker):
         'price': price
     }
     return ret
+
+
+@app.route('/prices/<ticker>/<period>/<interval>')
+def global_prices(ticker, period, interval):
+    ticker_info = Ticker(ticker.upper())
+    ticker_info = ticker_info.history(period=period, interval=interval)
+    return ticker_info['open'].to_json(orient="table"), 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/prices-br/<ticker>/<period>/<interval>')
+def br_prices(ticker, period, interval):
+    ticker_info = Ticker(ticker.upper() + ".SA")
+    ticker_info = ticker_info.history(period=period, interval=interval)
+    return ticker_info['open'].to_json(orient="table"), 200, {'Content-Type': 'application/json'}
 
 
 if __name__ == '__main__':
