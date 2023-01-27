@@ -30,7 +30,6 @@ def global_price(ticker):
     summary = ticker_info.summary_detail[ticker]
     price = ticker_info.price[ticker]
     ret = {
-        'summary': summary,
         'price': price
     }
     ticker_info = ticker_info.history(period='1d', interval="15m")
@@ -44,7 +43,6 @@ def br_price(ticker):
     summary = ticker_info.summary_detail[ticker + '.SA']
     price = ticker_info.price[ticker + '.SA']
     ret = {
-        'summary': summary,
         'price': price
     }
     return ret
