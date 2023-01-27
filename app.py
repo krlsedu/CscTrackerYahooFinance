@@ -49,6 +49,32 @@ def br_price(ticker):
     }
     return ret
 
+@app.route('/info-br/<ticker>')
+def br_info(ticker):
+    ticker_info = Ticker(ticker.upper() + ".SA")
+    summary = ticker_info.summary_detail[ticker + '.SA']
+    price = ticker_info.price[ticker + '.SA']
+    ret = {
+        'summary': summary,
+        'price': price,
+        'financial_data': ticker_info.financial_data[ticker + '.SA'],
+        'key_stats': ticker_info.key_stats[ticker + '.SA']
+    }
+    return ret
+
+@app.route('/info/<ticker>')
+def global_info(ticker):
+    ticker_info = Ticker(ticker.upper())
+    summary = ticker_info.summary_detail[ticker]
+    price = ticker_info.price[ticker]
+    ret = {
+        'summary': summary,
+        'price': price,
+        'financial_data': ticker_info.financial_data[ticker],
+        'key_stats': ticker_info.key_stats[ticker]
+    }
+    return ret
+
 
 @app.route('/prices/<ticker>/<period>/<interval>')
 def global_prices(ticker, period, interval):
