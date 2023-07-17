@@ -33,7 +33,6 @@ def global_price(ticker):
         'price': price
     }
     ticker_info = ticker_info.history(period='1d', interval="15m")
-    print(ticker_info['open'].to_json(orient="table"))
     return ret
 
 
