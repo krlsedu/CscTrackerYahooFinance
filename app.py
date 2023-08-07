@@ -27,19 +27,16 @@ t1.start()
 @app.route('/price/<ticker>')
 def global_price(ticker):
     ticker_info = Ticker(ticker.upper())
-    summary = ticker_info.summary_detail[ticker]
     price = ticker_info.price[ticker]
     ret = {
         'price': price
     }
-    ticker_info = ticker_info.history(period='1d', interval="15m")
     return ret
 
 
 @app.route('/price-br/<ticker>')
 def br_price(ticker):
     ticker_info = Ticker(ticker.upper() + ".SA")
-    summary = ticker_info.summary_detail[ticker + '.SA']
     price = ticker_info.price[ticker + '.SA']
     ret = {
         'price': price
