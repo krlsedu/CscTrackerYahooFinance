@@ -11,7 +11,7 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-metrics = PrometheusMetrics(app, group_by='endpoint')
+metrics = PrometheusMetrics(app, group_by='endpoint', default_labels={'application': 'CscTrackerFinance'})
 
 balancer = LoadBalancerRegister()
 
