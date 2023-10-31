@@ -1,4 +1,4 @@
-FROM python:3.9.13
+FROM python:3.9.18
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
