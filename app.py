@@ -26,7 +26,7 @@ t1.start()
 
 @app.route('/price/<ticker>')
 def global_price(ticker):
-    ticker_info = Ticker(ticker.upper())
+    ticker_info = Ticker(ticker.upper(), country='brazil')
     price = ticker_info.price[ticker]
     ret = {
         'price': price
@@ -36,7 +36,7 @@ def global_price(ticker):
 
 @app.route('/price-br/<ticker>')
 def br_price(ticker):
-    ticker_info = Ticker(ticker.upper() + ".SA")
+    ticker_info = Ticker(ticker.upper() + ".SA", country='brazil')
     price = ticker_info.price[ticker + '.SA']
     ret = {
         'price': price
@@ -45,7 +45,7 @@ def br_price(ticker):
 
 @app.route('/info-br/<ticker>')
 def br_info(ticker):
-    ticker_info = Ticker(ticker.upper() + ".SA")
+    ticker_info = Ticker(ticker.upper() + ".SA", country='brazil')
     summary = ticker_info.summary_detail[ticker + '.SA']
     price = ticker_info.price[ticker + '.SA']
     ret = {
@@ -58,7 +58,7 @@ def br_info(ticker):
 
 @app.route('/info/<ticker>')
 def global_info(ticker):
-    ticker_info = Ticker(ticker.upper())
+    ticker_info = Ticker(ticker.upper(), country='brazil')
     summary = ticker_info.summary_detail[ticker]
     price = ticker_info.price[ticker]
     ret = {
@@ -72,14 +72,14 @@ def global_info(ticker):
 
 @app.route('/prices/<ticker>/<period>/<interval>')
 def global_prices(ticker, period, interval):
-    ticker_info = Ticker(ticker.upper())
+    ticker_info = Ticker(ticker.upper(), country='brazil')
     ticker_info = ticker_info.history(period=period, interval=interval)
     return ticker_info['open'].to_json(orient="table"), 200, {'Content-Type': 'application/json'}
 
 
 @app.route('/prices-br/<ticker>/<period>/<interval>')
 def br_prices(ticker, period, interval):
-    ticker_info = Ticker(ticker.upper() + ".SA")
+    ticker_info = Ticker(ticker.upper() + ".SA", country='brazil')
     ticker_info = ticker_info.history(period=period, interval=interval)
     return ticker_info['open'].to_json(orient="table"), 200, {'Content-Type': 'application/json'}
 
