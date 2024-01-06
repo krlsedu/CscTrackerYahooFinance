@@ -1,27 +1,8 @@
-import threading
-
-from flask import Flask
-from flask_cors import CORS
-from prometheus_flask_exporter import PrometheusMetrics
+from csctracker_py_core.starter import Starter
 from yahooquery import Ticker
 
-from service.LoadBalancerRegister import LoadBalancerRegister
-
-app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
-
-metrics = PrometheusMetrics(app, group_by='endpoint', default_labels={'application': 'CscTrackerYahooFinance'})
-
-balancer = LoadBalancerRegister()
-
-
-def schedule_job():
-    balancer.register_service('yahoofinance')
-
-
-t1 = threading.Thread(target=schedule_job, args=())
-t1.start()
+starter = Starter()
+app = starter.get_app()
 
 
 @app.route('/price/<ticker>')
@@ -43,6 +24,7 @@ def br_price(ticker):
     }
     return ret
 
+
 @app.route('/info-br/<ticker>')
 def br_info(ticker):
     ticker_info = Ticker(ticker.upper() + ".SA", country='brazil')
@@ -55,6 +37,7 @@ def br_info(ticker):
         'key_stats': ticker_info.key_stats[ticker + '.SA']
     }
     return ret
+
 
 @app.route('/info/<ticker>')
 def global_info(ticker):
@@ -84,5 +67,4 @@ def br_prices(ticker, period, interval):
     return ticker_info['open'].to_json(orient="table"), 200, {'Content-Type': 'application/json'}
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+starter.start()
