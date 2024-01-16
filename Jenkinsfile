@@ -110,6 +110,68 @@ pipeline {
             }
         }
 
+        stage('Service update HomeLab') {
+            agent any
+            when {
+                expression { env.RELEASE_COMMIT != '0' }
+            }
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'master') {
+                        withCredentials([usernamePassword(credentialsId: 'developHost', passwordVariable: 'password', usernameVariable: 'user')]) {
+                            script {
+                                echo "Update remote"
+                                def remote = [:]
+                                remote.name = 'HomeLabHost'
+                                remote.host = env.HOME_LAB_HOST_IP
+                                remote.user = env.user
+                                remote.port = 22
+                                remote.password = env.password
+                                remote.allowAnyHosts = true
+                                sshCommand remote: remote, command: 'docker service update --image krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' ' + env.SERVICE_NAME
+                            }
+                        }
+                        withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
+                            httpRequest acceptType: 'APPLICATION_JSON',
+                                    contentType: 'APPLICATION_JSON',
+                                    httpMode: 'POST', quiet: true,
+                                    requestBody: '''{
+                                                       "app" : "Jenkins",
+                                                       "text" : "The service ''' + env.SERVICE_NAME + ''' has been successfully updated to version: ''' + env.VERSION_NAME + '''"
+                                                    }''',
+                                    customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
+                                    url: 'https://gtw.csctracker.com/notify-sync/message'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'developHost', passwordVariable: 'password', usernameVariable: 'user')]) {
+                            script {
+                                echo "Update remote"
+                                def remote = [:]
+                                remote.name = 'DevelopHost'
+                                remote.host = env.DEVELOP_HOST_IP
+                                remote.user = env.user
+                                remote.port = 22
+                                remote.password = env.password
+                                remote.allowAnyHosts = true
+                                sshCommand remote: remote, command: "docker service update --image krlsedu/" + env.IMAGE_NAME + ":" + env.VERSION_NAME + " " + env.SERVICE_NAME
+                            }
+                        }
+                        withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
+                            httpRequest acceptType: 'APPLICATION_JSON',
+                                    contentType: 'APPLICATION_JSON',
+                                    httpMode: 'POST', quiet: true,
+                                    requestBody: '''{
+                                                       "app" : "Jenkins",
+                                                       "text" : "The develop ''' + env.SERVICE_NAME + ''' has been successfully updated to version: ''' + env.VERSION_NAME + '''"
+                                                    }''',
+                                    customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
+                                    url: 'https://gtw.csctracker.com/notify-sync/message'
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Service update') {
             agent any
             when {
