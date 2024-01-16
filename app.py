@@ -2,6 +2,7 @@ from csctracker_py_core.starter import Starter
 from yahooquery import Ticker
 
 starter = Starter()
+http_repository = starter.get_http_repository()
 app = starter.get_app()
 
 
@@ -15,6 +16,20 @@ def global_price(ticker):
     return ret
 
 
+@app.route('/price')
+def global_price_list():
+    tickers_ = http_repository.get_args().get('tickers')
+    tickers_ = tickers_.split(',')
+    tickers = []
+    for ticker in tickers_:
+        sa_ = ticker.upper()
+        tickers.append(sa_)
+
+    ticker_info = Ticker(tickers, country='brazil')
+    price = ticker_info.price
+    return price, 200, {'Content-Type': 'application/json'}
+
+
 @app.route('/price-br/<ticker>')
 def br_price(ticker):
     ticker_info = Ticker(ticker.upper() + ".SA", country='brazil')
@@ -23,6 +38,20 @@ def br_price(ticker):
         'price': price
     }
     return ret
+
+
+@app.route('/price-br')
+def br_price_list():
+    tickers_ = http_repository.get_args().get('tickers')
+    tickers_ = tickers_.split(',')
+    tickers = []
+    for ticker in tickers_:
+        sa_ = ticker.upper() + ".SA"
+        tickers.append(sa_)
+
+    ticker_info = Ticker(tickers, country='brazil')
+    price = ticker_info.price
+    return price, 200, {'Content-Type': 'application/json'}
 
 
 @app.route('/info-br/<ticker>')
