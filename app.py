@@ -9,7 +9,7 @@ app = starter.get_app()
 @app.route('/price/<ticker>')
 def global_price(ticker):
     ticker_info = Ticker(ticker.upper(), country='brazil')
-    price = ticker_info.price[ticker]
+    price = ticker_info.price[ticker.upper()]
     ret = {
         'price': price
     }
